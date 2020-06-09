@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 class _Login extends State<MyApp> {
   final _formKey = new GlobalKey<FormState>();
   String _email, _password;
+  var apiCall = false;
 
   bool validateAndSave() {
     final form = _formKey.currentState;
@@ -28,8 +29,8 @@ class _Login extends State<MyApp> {
   }
 
   void _performLogin() {
-    if (validateAndSave()) {
-// perform firebase login and signup
+    if(validateAndSave()){
+      apiCall=true;
     }
   }
 
@@ -107,17 +108,27 @@ class _Login extends State<MyApp> {
     return Padding(
       padding: EdgeInsets.fromLTRB(20.0, 35.0, 20.0, 0.0),
       child: SizedBox(
-        height: 40.0,
+        height: 50.0,
         child: new RaisedButton(
             elevation: 5.0,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(5.0)),
             color: Colors.blue,
-            child: new Text(
+            child: !apiCall
+                ? new Text(
               "Login",
               style: TextStyle(fontSize: 20.0, color: Colors.white),
+            )
+                : CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
-            onPressed: _performLogin),
+            onPressed: () {
+              setState(() {
+                if (!apiCall) {
+                  _performLogin();
+                }
+              });
+            }),
       ),
     );
   }
@@ -131,7 +142,7 @@ class _Login extends State<MyApp> {
           elevation: 0.0,
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(5.0)),
-          color: Colors.white70,
+          color: Color.fromARGB(250, 250, 250, 250),
           child: new Text(
             "Create an account",
             style: TextStyle(fontSize: 20.0, color: Colors.grey),
