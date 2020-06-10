@@ -1,4 +1,4 @@
-#Tue Jun 09 22:52:57 IST 2020
+#Wed Jun 10 15:31:51 IST 2020
 base.0=/home/utsav/Desktop/DevelopmentCenter/Flutter Apps/flutterChatApp/build/app/intermediates/dex/debug/mergeDexDebug/out/classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

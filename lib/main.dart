@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'signUp.dart';
 
@@ -17,7 +18,31 @@ class MyApp extends StatefulWidget {
 class _Login extends State<MyApp> {
   final _formKey = new GlobalKey<FormState>();
   String _email, _password;
+  final navigatorKey = GlobalKey<NavigatorState>();
 
+
+  final pagesRouteFactories = {
+    /*"/": () => MaterialPageRoute(
+      builder: (context) => Center(
+        child: Text("HomePage",style: Theme.of(context).textTheme.body1,),
+      ),
+    ),
+    "takeOff": () => MaterialPageRoute(
+      builder: (context) => Center(
+        child: Text("Take Off",style: Theme.of(context).textTheme.body1,),
+      ),
+    ),
+    "landing": () => MaterialPageRoute(
+      builder: (context) => Center(
+        child: Text("Landing",style: Theme.of(context).textTheme.body1,),
+      ),
+    ),
+    "settings": () => MaterialPageRoute(
+      builder: (context) => Center(
+        child: Text("Settings",style: Theme.of(context).textTheme.body1,),
+      ),
+    ),*/
+  };
   bool validateAndSave() {
     final form = _formKey.currentState;
     if (form.validate()) {
@@ -32,18 +57,25 @@ class _Login extends State<MyApp> {
 // perform firebase login and signup
     }
   }
+  Widget _buildBody() =>
+      MaterialApp(home: Scaffold(
+        body: Center(
+          child: Stack(
+            children: <Widget>[showForm()],
+          ),
+        ),
+      ),
+          navigatorKey: navigatorKey,
+          onGenerateRoute: (route) => pagesRouteFactories[route.name]()
+      );
 
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     return MaterialApp(
+        home: _buildBody(),
         debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: Center(
-            child: Stack(
-              children: <Widget>[showForm()],
-            ),
-          ),
-        ));
+
+        );
   }
 
   Widget showForm() {
@@ -137,11 +169,12 @@ class _Login extends State<MyApp> {
             style: TextStyle(fontSize: 20.0, color: Colors.grey),
           ),
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => SignUp()));
+            navigatorKey.currentState.push(
+               MaterialPageRoute(builder: (context) => SignUp()));
           },
         ),
       ),
     );
   }
 }
+
