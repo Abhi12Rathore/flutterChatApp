@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'signUp.dart';
 
 void main() {
@@ -16,22 +17,93 @@ class MyApp extends StatefulWidget {
 
 class _Login extends State<MyApp> {
   final _formKey = new GlobalKey<FormState>();
+  String errorMsg = "";
   String _email, _password;
+  String _displayName;
+  bool _autoValidate = false;
   var apiCall = false;
 
-  bool validateAndSave() {
+  void _performLogin() async {
     final form = _formKey.currentState;
-    if (form.validate()) {
+    if (_formKey.currentState.validate()) {
       form.save();
-      return true;
+      setState(() {
+        apiCall = true;
+      });
+      try {
+        FirebaseUser firebaseUser = (await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: _email, password: _password)) as FirebaseUser;
+        UserUpdateInfo userUpdateInfo = new UserUpdateInfo();
+        userUpdateInfo.displayName = _displayName;
+        firebaseUser.updateProfile(userUpdateInfo).then((onValue) {
+          // Navigator.of(context).pushReplacementNamed('/home');
+          /*Firestore.instance.collection('users').document().setData(
+              {'email': _email, 'displayName': _displayName}).then((onValue) {
+            setState(() {
+
+            });
+          });*/
+        });
+        setState(() {
+          apiCall = false;
+        });
+      } catch (e) {
+        switch (e.code) {
+          case "ERROR_INVALID_EMAIL":
+            {
+              setState(() {
+                errorMsg = "This email is already in use.";
+                apiCall = false;
+              });
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      content: Container(
+                        child: Text(errorMsg),
+                      ),
+                    );
+                  });
+            }
+            break;
+
+          case "ERROR_WEAK_PASSWORD":
+            {
+              setState(() {
+                errorMsg = "The password must be 6 characters long or more.";
+                apiCall = false;
+              });
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      content: Container(
+                        child: Text(errorMsg),
+                      ),
+                    );
+                  });
+            }
+            break;
+
+          default:
+            {
+              setState(() {
+                errorMsg = "";
+              });
+            }
+            break;
+        }
+      }
+    } else {
+      setState(() {
+        _autoValidate = true;
+      });
     }
-    return false;
   }
 
-  void _performLogin() {
-    if(validateAndSave()){
-      apiCall=true;
-    }
+  void initState() {
+    super.initState();
   }
 
   Widget build(BuildContext context) {
@@ -106,31 +178,24 @@ class _Login extends State<MyApp> {
 
   Widget loginButton() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20.0, 35.0, 20.0, 0.0),
-      child: SizedBox(
-        height: 50.0,
-        child: new RaisedButton(
-            elevation: 5.0,
-            shape: new RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(5.0)),
-            color: Colors.blue,
-            child: !apiCall
-                ? new Text(
-              "Login",
-              style: TextStyle(fontSize: 20.0, color: Colors.white),
-            )
-                : CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-            onPressed: () {
-              setState(() {
-                if (!apiCall) {
-                  _performLogin();
-                }
-              });
-            }),
-      ),
-    );
+        padding: EdgeInsets.fromLTRB(20.0, 35.0, 20.0, 0.0),
+        child: SizedBox(
+          height: 50.0,
+          child: new RaisedButton(
+              elevation: 5.0,
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(5.0)),
+              color: Colors.blue,
+              child: apiCall
+                  ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                  : new Text(
+                      "Login",
+                      style: TextStyle(fontSize: 20.0, color: Colors.white),
+                    ),
+              onPressed: _performLogin),
+        ));
   }
 
   Widget signUp() {
@@ -148,8 +213,7 @@ class _Login extends State<MyApp> {
             style: TextStyle(fontSize: 20.0, color: Colors.grey),
           ),
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => SignUp()));
+            Navigator.of(context).pushNamed("/");
           },
         ),
       ),

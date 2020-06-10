@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "236291151682",
+    "firebase_url": "https://chat-app-e0c3b.firebaseio.com",
+    "project_id": "chat-app-e0c3b",
+    "storage_bucket": "chat-app-e0c3b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:236291151682:android:6fe00615199d1ec7221adb",
+        "android_client_info": {
+          "package_name": "com.abhishek.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "236291151682-70d0gsj5svr6clhe9fb6kc91advu4a3o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIo6NO-btXjreU45skNJPTtF8kIdnc54A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "236291151682-70d0gsj5svr6clhe9fb6kc91advu4a3o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
